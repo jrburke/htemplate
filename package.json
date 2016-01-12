@@ -1,0 +1,22 @@
+{
+  "name": "htemplate",
+  "version": "0.0.9",
+  "description": "Creates a tagged template string function that is aware of HTML in the generated strings.",
+  "main": "htemplate.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jrburke/htemplate.git"
+  },
+  "author": "James Burke",
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/jrburke/htemplate/issues"
+  },
+  "homepage": "https://github.com/jrburke/htemplate",
+  "devDependencies": {
+    "mocha": "^2.3.0"
+  },
+  "volo": {
+    "url": "https://raw.githubusercontent.com/jrburke/htemplate/{version}/htemplate.js"
+  }
+}

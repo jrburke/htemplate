@@ -1,0 +1,24 @@
+* {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 10px;
+}
+
+body {
+  font-family: "Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+
+
+#mochaContainer {
+  position: absolute;
+  top: 8rem;
+  left: 2rem;
+  width: calc(100% - 4rem);
+  background-color: white;
+}
+
+#mocha-stats {
+  position: relative;
+}
