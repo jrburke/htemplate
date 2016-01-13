@@ -54,9 +54,8 @@ Just `document.registerElement` is needed.
 ## todo
 
 Tests:
-* escapedValue
-* Confirm escaping occurs.
 * Test sub-functions.
 * Test option.
 * Test object that has a toString
 * Test two different instances of same custom element, should get different binding IDs, so they can be nested.
+* If data-x attribute, then do not do prop work, toString always.

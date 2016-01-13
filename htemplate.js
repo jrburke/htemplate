@@ -45,6 +45,14 @@
     return new EscapedValue(esc(value));
   };
 
+
+  function makeReplaceFunction(values) {
+    return function(match, id) {
+      values.push(id);
+      return '';
+    };
+  }
+
   var tagRegExp = /<[^>]+>/g;
 
   /**
@@ -89,10 +97,8 @@
 
         attrRegExp.lastIndex = 0;
 
-        tagSegment = tagSegment.replace(attrRegExp, function(match, id) {
-          values.push(id);
-          return '';
-        });
+        tagSegment = tagSegment.replace(attrRegExp,
+                                        makeReplaceFunction(values));
 
         result += tag.substring(0, dataIndex) + values.join(',') + tagSegment;
       }
@@ -103,7 +109,6 @@
     }
 
     return result;
-
   }
 
   function makeTagged(options) {
@@ -121,55 +126,56 @@
 
     function htagged(strings, ...values) {
       strings.forEach(function(str, i) {
-        var value;
-        // Have a
-        if (i < values.length) {
-          value = values[i];
-          if (!options.toStringAll &&
-              typeof value !== 'string' &&
-              !(value instanceof EscapedValue)) {
-            // Check for propName=" as the end of the previous string, if so, it
-            // is a binding to a property.
-            var match = propRegExp.exec(str);
-            if (match) {
-              if (bindingId === undefined) {
-                bindingId = (idCounter++);
-              }
+        // If there is no following value, at the end, just return;
+        if (i >= values.length) {
+          parts.push(str);
+          return;
+        }
 
-              var propId = 'id' + (fnCounter++);
-
-              if (!bindings) {
-                bindings = {};
-              }
-
-              bindings[propId] = {
-                value: value,
-                propName: match[1]
-              };
-
-              value = propId;
-
-              // Swap out the attribute name to be specific to this htagged ID,
-              // to make query selection faster and only targeted to this
-              // htagged.
-              str = str.substring(0, match.index) + ' data-hbinding' +
-                    bindingId + '="';
+        var value = values[i];
+        if (!options.toStringAll &&
+            typeof value !== 'string' &&
+            !(value instanceof EscapedValue)) {
+          // Check for propName=" as the end of the previous string, if so, it
+          // is a binding to a property.
+          var match = propRegExp.exec(str);
+          if (match) {
+            if (bindingId === undefined) {
+              bindingId = (idCounter++);
             }
+
+            var propId = 'id' + (fnCounter++);
+
+            if (!bindings) {
+              bindings = {};
+            }
+
+            bindings[propId] = {
+              value: value,
+              propName: match[1]
+            };
+
+            value = propId;
+
+            // Swap out the attribute name to be specific to this htagged ID,
+            // to make query selection faster and only targeted to this
+            // htagged.
+            str = str.substring(0, match.index) + ' data-hbinding' +
+                  bindingId + '="';
           }
         }
 
         parts.push(str);
 
-        if (value) {
-          if (value instanceof EscapedValue) {
-            value = value.escapedValue;
-          } else {
-            if (typeof value !== 'string') {
-              value = String(value);
-            }
-            parts.push(esc(value));
+        if (value instanceof EscapedValue) {
+          value = value.escapedValue;
+        } else {
+          if (typeof value !== 'string') {
+            value = String(value);
           }
+          value = esc(value);
         }
+        parts.push(value);
       });
     }
 

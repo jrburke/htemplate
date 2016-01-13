@@ -3,11 +3,11 @@
 
   var tests = [
     'basic',
-    'prop-setting'
+    'prop-setting',
+    'escape'
   ];
 
-  var urlSuffix,
-      runIndex = 0,
+  var runIndex = 0,
       runState = 'stopped';
 
   function getId(id) {
@@ -16,7 +16,6 @@
 
   function resetRun() {
     runIndex = 0;
-    urlSuffix = '?time=' + Date.now();
   }
 
   /*** List out the tests ***/
