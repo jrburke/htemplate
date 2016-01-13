@@ -2,9 +2,9 @@
   'use strict';
 
   var tests = [
-    'basic'
+    'basic',
+    'prop-setting'
   ];
-
 
   var urlSuffix,
       runIndex = 0,
@@ -61,7 +61,8 @@
   window.addEventListener('message', function(event) {
     // Nice to have, check event.origin, but nothing volatile is done with the
     // tests, so OK to pass on it for now.
-    var {id, failures} = event.data;
+    var id = event.data.id,
+        failures = event.data.failures;
 
     getId('test-' + id).classList.add(failures ? 'failure': 'success');
     runTest();

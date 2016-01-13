@@ -58,8 +58,5 @@ Tests:
 * Confirm escaping occurs.
 * Test sub-functions.
 * Test option.
-* Test number value.
 * Test object that has a toString
-* Test calling function with object, array.
-* Test setting prop with object, array.
-* Test two different instnaces of same custon element, should get different binding IDs, so they can be nested.
+* Test two different instances of same custom element, should get different binding IDs, so they can be nested.

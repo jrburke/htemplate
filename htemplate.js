@@ -45,45 +45,103 @@
     return new EscapedValue(esc(value));
   };
 
+  var tagRegExp = /<[^>]+>/g;
+
+  /**
+   * Split up the text by < and > tag segments, look for
+   * data-hbinding(bindingId) attributes, and group the values into one
+   * data-hbinding attribute since the browser will discard the same named
+   * attributes just keeping the first one.
+   */
+  function groupBindings(bindingId, text) {
+    var match,
+        attrName = 'data-hbinding' + bindingId,
+        attrRegExp = new RegExp(attrName + '="([^"]+)"', 'g'),
+        result = '',
+        index = 0;
+
+    tagRegExp.lastIndex = 0;
+
+    while ((match = tagRegExp.exec(text))) {
+      if (match.index !== index) {
+        result += text.substring(index, match.index);
+      }
+      index = tagRegExp.lastIndex;
+
+      var tag = match[0];
+      var dataIndex = tag.indexOf(attrName);
+      if (dataIndex === -1) {
+        // No bindings, just write out the tag.
+        result += tag;
+      } else {
+        // The + 2 is to move the index past the double quote that starts the
+        // attribute value.
+        dataIndex += attrName.length + 2;
+        var quoteIndex = tag.indexOf('"', dataIndex);
+        if (quoteIndex === -1) {
+          throw new Error('Unexpected HTML, expecting attribute values to be ' +
+                          'surrounded by double quotes.');
+        }
+
+        var values = [tag.substring(dataIndex, quoteIndex)];
+
+        var tagSegment = tag.substring(quoteIndex);
+
+        attrRegExp.lastIndex = 0;
+
+        tagSegment = tagSegment.replace(attrRegExp, function(match, id) {
+          values.push(id);
+          return '';
+        });
+
+        result += tag.substring(0, dataIndex) + values.join(',') + tagSegment;
+      }
+    }
+
+    if (index < text.length - 1) {
+      result += text.substring(index, text.length);
+    }
+
+    return result;
+
+  }
+
   function makeTagged(options) {
     options = options || {};
 
-    var dataId = (idCounter++),
-        fnCounter = 0,
-        parts = [],
-        bindingId,
-        bindings = {};
+    var parts, fnCounter, bindingId, bindings;
 
-    return function htagged(strings, ...values) {
-      // If no strings passed, the return the results.
-      if (!strings) {
-        var result = {
-          bindingId: dataId,
-          bindings: bindings,
-          text: parts.join('')
-        };
-        fnCounter = 0;
-        parts = [];
-        bindingId = undefined;
-        bindings = {};
+    function reset() {
+      parts = [];
+      fnCounter = 0;
+      bindingId = bindings = undefined;
+    }
 
-        return result;
-      }
+    reset();
 
+    function htagged(strings, ...values) {
       strings.forEach(function(str, i) {
         var value;
         // Have a
         if (i < values.length) {
           value = values[i];
           if (!options.toStringAll &&
-              typeof value !== 'string' && typeof value !== 'number' &&
+              typeof value !== 'string' &&
               !(value instanceof EscapedValue)) {
             // Check for propName=" as the end of the previous string, if so, it
             // is a binding to a property.
             var match = propRegExp.exec(str);
             if (match) {
-              bindingId = dataId;
+              if (bindingId === undefined) {
+                bindingId = (idCounter++);
+              }
+
               var propId = 'id' + (fnCounter++);
+
+              if (!bindings) {
+                bindings = {};
+              }
+
               bindings[propId] = {
                 value: value,
                 propName: match[1]
@@ -113,7 +171,33 @@
           }
         }
       });
+    }
+
+    htagged.done = function() {
+      var text = parts.join('');
+
+      if (bindingId !== undefined) {
+        // Process the text to replace multiple data-hbinding attributes with
+        // one that groups the values. Otherwise the browser will just keep the
+        // first value.
+        text = groupBindings(bindingId, text);
+      }
+
+      var result = {
+        text: text
+      };
+
+      if (bindingId !== undefined) {
+        result.bindingId = bindingId;
+        result.bindings = bindings;
+      }
+
+      reset();
+
+      return result;
     };
+
+    return htagged;
   }
 
   function makeTagResultFn(fn, options) {
@@ -121,37 +205,39 @@
 
     return function renderToDom() {
       fn.call(this, taggedFn, esc);
-      return taggedFn();
+      return taggedFn.done();
     };
   }
 
   function applyBindings(element, tagResult) {
-    var bindingId = tagResult.bindingId;
-    if (bindingId) {
+
+    var bindingId = tagResult.bindingId,
+        query = '[data-hbinding' + bindingId + ']';
+
+    if (bindingId !== undefined) {
       var nodeList = element
-                     .querySelectorAll('[data-hbinding' + bindingId + ']');
+                     .querySelectorAll(query);
 
-      slice.call(nodeList, 0)
-      .forEach(function(node) {
-        debugger;
-        var propId = node.dataset['hbinding' + bindingId],
-            binding = tagResult.bindings[propId];
-
+      slice.call(nodeList, 0).forEach(function(node) {
+        var propIds = node.dataset['hbinding' + bindingId];
         delete node.dataset['hbinding' + bindingId];
 
-        if (!binding) {
-          console.error('Cound not find binding ' + propId);
-          return;
-        }
-
-        var propName = binding.propName;
-        if (propName) {
-          if (typeof node[propName] === 'function') {
-            node[propName](binding.value);
-          } else {
-            node[propName] = binding.value;
+        propIds.split(',').forEach(function(propId) {
+          var binding = tagResult.bindings[propId];
+          if (!binding) {
+            console.error('Cound not find binding ' + propId);
+            return;
           }
-        }
+
+          var propName = binding.propName;
+          if (propName) {
+            if (typeof node[propName] === 'function') {
+              node[propName](binding.value);
+            } else {
+              node[propName] = binding.value;
+            }
+          }
+        });
       });
     }
   }
