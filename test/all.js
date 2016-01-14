@@ -5,6 +5,7 @@
     'basic',
     'escape',
     'nested',
+    'obj-not-prop',
     'prop-setting',
     'tostring-all'
   ];

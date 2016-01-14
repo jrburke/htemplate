@@ -46,6 +46,7 @@ Test prerequisites:
 * Run in a browser that supports
 [custom elements](https://developer.mozilla.org/en-US/docs/Web/Web_Components/Custom_Elements).
 Just `document.registerElement` is needed.
+* Tagged template strings.
 
 ## License
 
