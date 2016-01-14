@@ -152,7 +152,9 @@
           // Check for propName=" as the end of the previous string, if so, it
           // is a name to a property to be set/called later with the value.
           var match = propRegExp.exec(str);
-          if (match) {
+          // data-prop should go the string path, since that is a defined HTML
+          // API that maps to element.dataset.prop.
+          if (match && match[1].indexOf('data-') !== 0) {
             if (propId === undefined) {
               propId = (idCounter++);
             }
@@ -163,9 +165,18 @@
               props = {};
             }
 
+            var propName = match[1];
+            // Convert a-prop-name to aPropName
+            if (propName.indexOf('-') !== -1) {
+              propName = propName.split('-').map(function(part, partIndex) {
+                return partIndex === 0 ?
+                       part : part.charAt(0).toUpperCase() + part.substring(1);
+              }).join('');
+            }
+
             props[propValueId] = {
               value: value,
-              propName: match[1]
+              propName: propName
             };
 
             value = propValueId;

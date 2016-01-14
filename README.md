@@ -55,4 +55,3 @@ Just `document.registerElement` is needed.
 
 Tests:
 * Test two different instances of same custom element, should get different binding IDs, so they can be nested.
-* If data-x attribute, then do not do prop work, toString always.
