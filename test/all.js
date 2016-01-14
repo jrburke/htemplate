@@ -4,6 +4,7 @@
   var tests = [
     'basic',
     'escape',
+    'nested',
     'prop-setting',
     'tostring-all'
   ];

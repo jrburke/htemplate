@@ -50,8 +50,3 @@ Just `document.registerElement` is needed.
 ## License
 
 [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0)
-
-## todo
-
-Tests:
-* Test two different instances of same custom element, should get different binding IDs, so they can be nested.
