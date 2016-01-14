@@ -3,8 +3,9 @@
 
   var tests = [
     'basic',
+    'escape',
     'prop-setting',
-    'escape'
+    'tostring-all'
   ];
 
   var runIndex = 0,
