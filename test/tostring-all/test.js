@@ -4,7 +4,7 @@ define('base', function(require) {
 
   return function(tagName, renderFn) {
     var proto = Object.create(HTMLElement.prototype);
-    proto.createdCallback = require('htemplate')(renderFn, null, {
+    proto.createdCallback = require('htemplate')(renderFn, {
       // This is the unique thing about this test.
       toStringAll: true
     });

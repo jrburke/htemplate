@@ -2,14 +2,16 @@
  * htemplate, version 0.0.9.
  * Copyright 2015-2016, Mozilla Foundation. Apache 2.0 License.
  */
-(function(factory) {
+(function(root, factory) {
   'use strict';
   if (typeof define === 'function' && define.amd) {
     define(factory);
-  } else if (typeof module === 'object' && typeof exports === 'object') {
+  } else if (typeof module === 'object' && module.exports) {
     module.exports = factory();
+  } else {
+    root.htemplate = factory();
   }
-}(function() {
+}(this, function() {
   'use strict';
 
   var idCounter = 0,
@@ -308,8 +310,11 @@
    *         show up in the tagged template strings to just be toString()'d,
    *         instead of treated as property calls to the elements in the HTML.
    */
-  function htemplate(renderFn, verifyFn, options) {
-    var tagResultFn = makeTagResultFn(renderFn, options);
+  function htemplate(renderFn, options) {
+    options = options || {};
+    var tagResultFn = makeTagResultFn(renderFn, options),
+        element = options.element,
+        verifyFn = options.verifyFn;
 
     return function htmlToDom() {
       var tagResult = tagResultFn.call(this);
@@ -322,7 +327,12 @@
           verifyFn(this, tagResult);
         }
 
-        this.innerHTML = tagResult.text;
+        var elementObj = this;
+        if (element) {
+          elementObj = typeof element === 'function' ?
+                       element.call(this) : element;
+        }
+        elementObj.innerHTML = tagResult.text;
 
         applyProps(this, tagResult);
       }
