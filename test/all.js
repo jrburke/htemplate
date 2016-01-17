@@ -2,6 +2,7 @@
   'use strict';
 
   var tests = [
+    'alt-element',
     'basic',
     'escape',
     'nested',

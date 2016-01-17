@@ -100,7 +100,7 @@ If you want to use the Shadow DOM instead of setting the public innerHTML for a 
 this.render = require('htemplate')(function(html) {
   html``;
 }, {
-  element: function() { return this.createShadowRoot(); }
+  element: function() { return  this.shadowRoot || this.createShadowRoot(); }
 });
 ```
 
@@ -169,7 +169,32 @@ In summary, it turns off the [property setting](#property-setting) capability.
 
 ### Property setting
 
-xxx
+Any non-string value from an expression interpolation (the `${thing}` usage in a tagged template string), will result on a property set on the DOM element if the expression interpolation is the value for an attribute in the HTML. Example:
+
+```javascript
+this.render = htemplate(function(html) {
+  html`<account-listing model="${this.model}"></account-listing>`;
+});
+```
+
+If `this.model` is not typeof 'string', then once the above HTML is set as the innerHTML, htemplate will then do the equivalent of `element.querySelector('account-listing').model = this.model`.
+
+If the property on the element is a function (typeof 'function'), htemplate will call the function with expression interpolation value as the single argument.
+
+For property names that are mixed case, you can either just used the mixed case name, or if you want to keep the name all lower case, htemplate will convert `a-prop-name` to `aPropName` before doing the property set:
+
+```javascript
+// These are equivalent, both result in some-thing.aPropName = nonStringValue.
+html`<some-thing aPropName="${nonStringValue}"></some-thing>`;
+html`<some-thing a-prop-name="${nonStringValue}"></some-thing>`;
+```
+
+**Notes**:
+
+* Property setting is only done for expression interpolation values that are attribute values, and those attributes must use double quotes around them to work.
+* If the attribute name starts with `data-`, property setting is **not** done, and instead the expression interpolation value is toString()'d. This is to maintain compatibility with [HTML data attributes](https://developer.mozilla.org/en/docs/Web/Guide/HTML/Using_data_attributes).
+* Expression interpolation values that are **strings** are not property sets, they end up just being DOM attributes on the element. Get them via `element.getAttribute()`.
+* This property set behavior can be skipped, forcing all expression interpolation values to be toString()'d into the HTML, with the [toStringAll](#tostringall) htemplate option.
 
 ## Tests
 
@@ -187,10 +212,6 @@ Just `document.registerElement` is needed.
 * Tagged template strings.
 
 Firefox with the `dom.webcomponents.enabled` pref set to true (via about:config) or Chrome work well.
-
-### Tests todo
-
-* plain element, this.dom, shadow DOM.
 
 ## License
 
