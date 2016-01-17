@@ -59,7 +59,7 @@ define(function(require) {
     thirdRunId += 1;
     html`<h1 data-runid="${thirdRunId}">Third Element</h1>`;
   }, {
-    element: function() { return third; }
+    element: third
   })
   thirdElementRender();
   templateOut.appendChild(third);
