@@ -237,17 +237,8 @@
 
   /**
    * Creates the function that will run the passed in fn function, passing
-   * the html() function to that fn for use in building up the HTML string.
-   * Then calls html.done() to te the final tag result.
-   * @param  {Function} fn the function that will use the html() function.
-   * @param  {Object} [options] options to control the behavior. The only option
-   *          at the momenet is ""
-   * @returns  {Object} tag result option with these properties:
-   * - text: the HTML string with the generated properties.
-   * - propId: A unique ID used to bind the prop calls later, if property calls
-   *   were used in the template. Only useful if manually calling applyProps().
-   * - props: An object that holds the property calls to do. Only useful if
-   *   manually calling applyProps().
+   * the html() function to that so it can build up the HTML string.
+   * Then calls html.done() to get the final tag result.
    */
   function makeTagResultFn(fn, options) {
     var htmlFn = makeHtml(options);
@@ -294,22 +285,7 @@
     }
   }
 
-  /**
-   * The main API: generates a function that can be used to set the innerHTML
-   * to the tag result and to optionally call properties on elements if the
-   * tagged template use had non-string values in it.
-   *
-   * The function returned by this function assumes it will be bound to an
-   * object, such that it can use `this.innerHTML` to set the innerHTML.
-   * @param  {Function} renderFn the function that will use the html() function.
-   * @param  {Function} [verifyFn] optional function that can be used to verify,
-   *         inspect, or modify the tagResult before the innerHTML is set to
-   *         the text value in the tagResult.
-   * @param  {Object} [options] optional options object. The only option right
-   *         now is "toStringAll", which will force all non-string values that
-   *         show up in the tagged template strings to just be toString()'d,
-   *         instead of treated as property calls to the elements in the HTML.
-   */
+  /** The main public API **/
   function htemplate(renderFn, options) {
     options = options || {};
     var tagResultFn = makeTagResultFn(renderFn, options),
@@ -324,7 +300,7 @@
 
         // The verifyFn could decide to modify the tagResult object.
         if (verifyFn) {
-          verifyFn(this, tagResult);
+          verifyFn.call(this, tagResult);
         }
 
         var elementObj = this;

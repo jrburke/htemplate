@@ -123,14 +123,50 @@ htemplate does not do any virtual DOM diffing, it will just set the innerHTML. C
 ## API
 
 ```javascript
-var WHAT = htemplate(renderFn, options);
+this.render = htemplate(renderFn, options);
 ```
 
 ### renderFn
 
-`renderFn` is the function that will be called
+`renderFn` is the function that will be called with the `html()` tagged template function. `renderFn` will use it to build up a string of HTML to insert as the innerHTML for an element. In its default configuration it assumes the element is a custom element. The `html()` function will properly HTML escape strings for expression interpolations.
+
+For example:
+
+```javascript
+// When this.render() is called, the innerHTML generated would be:
+// <p>Go this way: &lt;north&gt;</p>
+
+this.render = htemplate(function(html) {
+  var direction = '<north>';
+  html`<p>Go this way: ${direction}</p>`;
+});
+```
 
 ### options
+
+#### element
+
+Function or DOM element. Optional. This controls what element is used for the `element.innerHTML` call done internally. By default, the element is the same `this` used for the renderFn, but see the [API Introduction](#api-introduction) section for ways to target using a Shadow DOM, some other component property, or just a plain element already in the DOM.
+
+The value can be a function, or a DOM element. The function is called with `this` as the same as the `this` used for the renderFn.
+
+#### verifyFn
+
+Function. Optional. Once the HTML string has been constructed from the renderFn but before it is used for the innerHTML call, the verifyFn can verify or change the text result.
+
+This is useful for doing tasks like confirming all the custom elements used in the HTML string have already been loaded. This logic could be unique the loading situation of the app.
+
+The function is called with the `this` value the same as the `this` used for renderFn, and one parameter, `tagResult`, which has the following properties:
+
+* text: the HTML string generated from renderFn.
+* propId: A unique ID used to bind the props property sets later, if property sets were used in the template. Only useful if manually calling `htemplate.applyProps()`, can be ignored for the usual `htemplate()` usage.
+* props: An object that holds the property sets to do. Only useful if manually calling `htemplate.applyProps()`, can be ignored for the usual `htemplate()` usage.
+
+#### toStringAll
+
+Boolean. Optional. If set to true, this will force all non-string values that are a result of expression interpolation to just be toString()'d into the resulting HTML string, instead of treating them as [property sets](#property-setting) to do to the elements in the HTML.
+
+In summary, it turns off the [property setting](#property-setting) capability.
 
 ### Property setting
 
