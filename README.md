@@ -12,8 +12,6 @@ Assumes a browser that supports:
 
 * [ES2015 Tagged template strings](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/template_strings#Tagged_template_strings)
 
-It is implemented as a UMD module that can be used as an AMD or Node-style CommonJS module, or in a non-module, browser globals setup via the `htemplate` global.
-
 ## Install
 
 Grab the htemplate.js in this repo and place it in your project. You can get the
@@ -30,10 +28,11 @@ bower install jrburke/template
 volo install jrburke/htemplate
 ```
 
-### API Introduction.
+### API Introduction
 
-The main entry point is the htemplate() function returned as the module export.
-htemplate() returns a function that when called later will do the following:
+It is implemented as a UMD module that can be used as an AMD or Node-style CommonJS module, or in a non-module, browser globals setup via the `htemplate` global.
+
+The main entry point is the htemplate() function returned as the module export. htemplate() returns a function that when called later will do the following:
 
 * Runs the renderFn function that uses the `html()` tagged template.
 * Sets `this.innerHTML` with the text result.
@@ -118,7 +117,7 @@ var render = require('htemplate')(function(html) {
 render();
 ```
 
-htemplate does not do any virtual DOM diffing, it will just set the innerHTML. Create small components that have fine grained model listening that just update the parts of the UI that change.
+htemplate does not do any virtual DOM diffing, it will just set the innerHTML. Create small components that have fine grained model listening to minimize the parts of the UI that change.
 
 ## API
 
@@ -154,17 +153,17 @@ The value can be a function, or a DOM element. The function is called with `this
 
 Function. Optional. Once the HTML string has been constructed from the renderFn but before it is used for the innerHTML call, the verifyFn can verify or change the text result.
 
-This is useful for doing tasks like confirming all the custom elements used in the HTML string have already been loaded. This logic could be unique the loading situation of the app.
+This is useful for tasks like confirming all the custom elements used in the HTML string have already been loaded. This logic could be unique the loading situation of the app.
 
-The function is called with the `this` value the same as the `this` used for renderFn, and one parameter, `tagResult`, which has the following properties:
+The function is called with the `this` value the same as the `this` used for renderFn, and one parameter is passed to the function, `tagResult`, which has the following properties:
 
 * text: the HTML string generated from renderFn.
-* propId: A unique ID used to bind the props property sets later, if property sets were used in the template. Only useful if manually calling `htemplate.applyProps()`, can be ignored for the usual `htemplate()` usage.
-* props: An object that holds the property sets to do. Only useful if manually calling `htemplate.applyProps()`, can be ignored for the usual `htemplate()` usage.
+* propId: A unique ID used to bind the props property sets later, if property sets were used in the template. Only useful if manually calling `htemplate.applyProps()`. Part of the [property setting](#property-setting) functionality, can be ignored for the usual `htemplate()` usage.
+* props: An object that holds the property sets to do. Only useful if manually calling `htemplate.applyProps()`. Part of the [property setting](#property-setting) functionality, can be ignored for the usual `htemplate()` usage.
 
 #### toStringAll
 
-Boolean. Optional. If set to true, this will force all non-string values that are a result of expression interpolation to just be toString()'d into the resulting HTML string, instead of treating them as [property sets](#property-setting) to do to the elements in the HTML.
+Boolean. Optional. If set to true, this will force all non-string values that are a result of expression interpolation to just be toString()'d into the resulting HTML string, instead of treating them as [property sets](#property-setting) on elements in the HTML.
 
 In summary, it turns off the [property setting](#property-setting) capability.
 
