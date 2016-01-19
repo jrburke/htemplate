@@ -1,6 +1,6 @@
 {
   "name": "htemplate",
-  "version": "0.0.9",
+  "version": "1.0.0",
   "description": "Creates a tagged template string function that is aware of HTML in the generated strings",
   "main": "htemplate.js",
   "repository": {

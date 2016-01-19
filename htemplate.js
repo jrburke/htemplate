@@ -1,5 +1,5 @@
 /*
- * htemplate, version 0.0.9.
+ * htemplate, version 1.0.0.
  * Copyright 2015-2016, Mozilla Foundation. Apache 2.0 License.
  */
 (function(root, factory) {
