@@ -30,7 +30,7 @@ The module does not have any dependencies.
 If using a package manager:
 
 ```
-[npm | bower | volo ] install jrburke/htemplate
+[npm | bower | volo] install jrburke/htemplate
 ```
 
 ### Introduction
