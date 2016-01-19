@@ -6,7 +6,7 @@
     ".npmignore",
     "node_modules",
     "README.md",
-    "test",
+    "test"
   ],
   "homepage": "https://github.com/jrburke/htemplate",
   "authors": [
