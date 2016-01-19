@@ -12,6 +12,13 @@ Assumes a browser that supports:
 
 * [ES2015 Tagged template strings](https://developer.mozilla.org/en/docs/Web/JavaScript/Reference/template_strings#Tagged_template_strings)
 
+# Editor syntax highlighting
+
+Editor support for syntax highlighting HTML inside the tagged template strings helps with the string legibility. This section tracks open issues related to getting wider support for this feature in more editors. If you can help with these issues, it would be appreciated.
+
+* [Atom editor](https://github.com/atom/language-javascript/pull/282)
+* [Sublime Text, JavaScriptNext.tmLanguage package](https://github.com/Benvie/JavaScriptNext.tmLanguage/issues/134)
+
 ## Install
 
 Grab the htemplate.js in this repo and place it in your project. You can get the
@@ -20,12 +27,10 @@ latest release via the
 
 The module does not have any dependencies.
 
-These also work:
+If using a package manager:
 
 ```
-npm install jrburke/htemplate
-bower install jrburke/template
-volo install jrburke/htemplate
+[npm | bower | volo ] install jrburke/htemplate
 ```
 
 ### Introduction
