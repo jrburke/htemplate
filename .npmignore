@@ -1,3 +1,5 @@
-test
 .eslintrc
 .npmignore
+bower.json
+README.md
+test
