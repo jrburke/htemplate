@@ -3,8 +3,10 @@
   "version": "0.0.9",
   "ignore": [
     ".eslintrc",
+    ".gitignore",
     ".npmignore",
     "node_modules",
+    "package.json",
     "README.md",
     "test"
   ],
