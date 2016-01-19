@@ -39,17 +39,13 @@
     return entities[s];
   }
 
-  /**
-   * HTML escapes the value string.
-   */
+  // HTML escapes the value string.
   function esc(value) {
     return value.replace(entityRegExp, getEntity);
   }
 
-  /**
-   * Escapes HTML, and returns as an EscapedValue, so that if used in the
-   * template, it is not double-escaped.
-   */
+  // Escapes HTML, and returns as an EscapedValue, so that if used in the
+  // template, it is not double-escaped.
   esc.html = function(value) {
     return new EscapedValue(esc(value));
   };
@@ -63,12 +59,10 @@
     };
   }
 
-  /**
-   * Split up the text by < and > tag segments, look for
-   * data-htemplateprop(propId) attributes, and group the values into one
-   * data-htemplateprop attribute since the browser will discard the same named
-   * attributes just keeping the first one.
-   */
+  // Split up the text by < and > tag segments, look for
+  // data-htemplateprop(propId) attributes, and group the values into one
+  // data-htemplateprop attribute since the browser will discard the same named
+  // attributes just keeping the first one.
   function groupProps(propId, text) {
     var match,
         attrName = 'data-htemplateprop' + propId,
@@ -119,10 +113,7 @@
     return result;
   }
 
-  /**
-   * Creates the html() function that can be used for the tagged template
-   * string.
-   */
+  // Creates html() function that can be used for the tagged template string.
   function makeHtml(options) {
     options = options || {};
 
@@ -205,9 +196,7 @@
     }
 
     // Generates the final response by concatenating the previous html`` calls
-    // into the final result, and groups and property calls into one HTML
-    // attribute within a tag, if there are any. Returns the info needed to
-    // apply the props later once the HTML is inserted into the DOM.
+    // into the final result.
     html.done = function() {
       var text = parts.join('');
 
@@ -235,11 +224,9 @@
     return html;
   }
 
-  /**
-   * Creates the function that will run the passed in fn function, passing
-   * the html() function to that so it can build up the HTML string.
-   * Then calls html.done() to get the final tag result.
-   */
+  // Creates the function that will run the passed in fn function, passing the
+  // html() function to that so it can build up the HTML string. Then calls
+  // html.done() to get the final tag result.
   function makeTagResultFn(fn, options) {
     var htmlFn = makeHtml(options);
 
@@ -249,10 +236,8 @@
     };
   }
 
-  /**
-   * Calls properties on element from the tagResult. Only useful if manually
-   * calling after calling the function returned from makeTagResultFn.
-   */
+  // Calls properties on element from the tagResult. Only useful if manually
+  // calling after calling the function returned from makeTagResultFn.
   function applyProps(element, tagResult) {
     var propId = tagResult.propId,
         query = '[data-htemplateprop' + propId + ']';
@@ -285,7 +270,7 @@
     }
   }
 
-  /** The main public API **/
+  // The main public API
   function htemplate(renderFn, options) {
     options = options || {};
     var tagResultFn = makeTagResultFn(renderFn, options),
